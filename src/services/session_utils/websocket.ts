@@ -1,0 +1,21 @@
+export default function createWebSocket(section: string): WebSocket {
+    const socket = new WebSocket(`ws://localhost:8000/sessions/${section}/ws`); // Replace with your actual WebSocket URL
+    
+    socket.onopen = () => {
+      console.log('WebSocket connection established.');
+    };
+    
+    socket.onclose = (event) => {
+        if (event.wasClean) {
+            console.log(`WebSocket closed cleanly, code=${event.code}, reason=${event.reason}`);
+        } else {
+            console.error('WebSocket connection closed unexpectedly');
+        }
+    };
+    
+    socket.onerror = (error) => {
+        console.error(`WebSocket error: ${error}`);
+    };
+
+    return socket;
+}
