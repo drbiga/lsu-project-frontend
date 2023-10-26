@@ -5,15 +5,21 @@ interface StartSessionResponse {
     message: string;
 }
 
+interface NextSeqNumberResponse {
+    status: string;
+    data: number;
+    message?: string;
+}
+
 export default class StudentService {
     public async getAllStudentNames(): Promise<string[]> {
         const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/students`);
         return response.data;
     }
 
-    public async getNextSessionSeqNumber(name: string): Promise<number> {
-        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/students/${name}/num_finished_sessions`);
-        return response.data + 1;
+    public async getNextSessionSeqNumber(name: string): Promise<NextSeqNumberResponse> {
+        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/students/${name}/next_session_seq_number`);
+        return response.data;
     }
 
     public async startNextSession(name: string): Promise<StartSessionResponse> {
