@@ -4,6 +4,7 @@ import ReadComp from "../components/ReadComp";
 import Homework from "../components/Homework";
 import Survey from "../components/Survey";
 import StudentService from "../services/student";
+import Header from "../components/Header";
 const sessionService = new SessionService();
 const studentService = new StudentService();
 
@@ -44,6 +45,7 @@ function Main() {
 
     return (
         <>
+        <Header />
             {
                 selectStudentName === '' ? (
                     <div
@@ -96,7 +98,7 @@ function Main() {
                                     <p>Way to goo!</p>
                                 </div>
                             ) : (
-                                <div>
+                                <div className="container">
                                     <h1>Welcome back, {selectStudentName}!</h1>
                                     <p>Your next session is #{nextSessionSeqNumber}</p>
                                     <div>
