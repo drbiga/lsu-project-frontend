@@ -25,16 +25,16 @@ export default class SessionService {
     }
 
     public createSession() {
-        axios.post(`${import.meta.env.VITE_BASE_URL}/sessions`);
+        axios.post(`http://localhost:8000/sessions`);
     }
 
     public startSession() {
-        const response = axios.post(`${import.meta.env.VITE_BASE_URL}/sessions/start`);
+        const response = axios.post(`http://localhost:8000/sessions/start`);
         response.then((v) => console.log(v.data));
     }
 
     public async getSession(seqNumber: number): Promise<Session> {
-        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/sessions`, {
+        const response = await axios.get(`http://localhost:8000/sessions`, {
             params: {
                 seq_number: seqNumber
             }
@@ -43,7 +43,7 @@ export default class SessionService {
     }
 
     // public async getRemainingTime() {
-    //     const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/sessions/remaining_time`);
+    //     const response = await axios.get(`http://localhost:8000/sessions/remaining_time`);
     //     if (response.data.status === 'success') {
     //         return response.data.data
     //     } else {
@@ -52,7 +52,7 @@ export default class SessionService {
     // }
 
     // public async getCurrentPart() {
-    //     const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/sessions/part`);
+    //     const response = await axios.get(`http://localhost:8000/sessions/part`);
     //     if (response.data.status === 'success') {
     //         return response.data.data
     //     } else {
