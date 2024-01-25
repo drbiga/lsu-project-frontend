@@ -58,10 +58,11 @@ function Main() {
     }, [selectStudentName, nextSessionSeqNumber]);
 
     let sessionComponent;
-    if (sessionPart == SessionPart.FINISHED) {
-        setSessionStarted(false);
-    }
     switch (sessionPart) {
+        case SessionPart.WAITING_START: {
+            sessionComponent = (<></>);
+            break;
+        }
         case SessionPart.READ_COMP: {
             if (session) {
                 sessionComponent = (<ReadComp link={session.read_comp_link} />);
@@ -78,6 +79,24 @@ function Main() {
             }
             break;
         }
+        case SessionPart.FINISHED: {
+            // setSessionStarted(false);
+            console.log("Aqui");
+            sessionComponent = (
+                <div
+                    style={{ minHeight: '100vh' }}
+                    className="d-flex flex-column align-items-center justify-content-center"
+                >
+                    <h1>We are done</h1>
+                    <p>Thank you for participating in the program and for concluding one more session</p>
+                    <p>Way to go!</p>
+                </div>
+            )
+            break;
+        }
+        default: {
+            sessionComponent = (<h1>Something weird is happenning...</h1>)
+        }
     }
 
     return (
@@ -86,45 +105,28 @@ function Main() {
             {
                 selectStudentName === '' ? <UserSelection studentNames={studentNames} setSelectedStudentName={setSelectedStudentName} /> : (
                     <div>
-                        {
-                            // If the session is finished
-                            sessionPart === SessionPart.FINISHED ? (
-                                <div
-                                    style={{ minHeight: '100vh' }}
-                                    className="d-flex flex-column align-items-center justify-content-center"
-                                >
-                                    <h1>We are done</h1>
-                                    <p>Thank you for participating in the program and for concluding one more sesion</p>
-                                    <p>Way to goo!</p>
-                                </div>
-                            ) : (
-                            // Else
-                                <div className="container">
-                                    <div className="collapse" id="collapseExample">
-                                        <h1>Welcome back, {selectStudentName}!</h1>
-                                        <p>Your next session is #{nextSessionSeqNumber}</p>
-                                    </div>
-                                    <p>
-                                        <button onClick={() => setHeaderIsHidden(!headerIsHidden)} className="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="true" aria-controls="collapseExample">
-                                            {headerIsHidden ? "Show Header" : "Hide Header"}
-                                        </button>
-                                    </p>
-                                    <div>
-                                        {!sessionStarted && (
-                                            <button
-                                                className="btn btn-primary"
-                                                onClick={handleStartSession}
-                                            >
-                                                Start Session
-                                            </button>
-                                        )}
-                                    </div>
-                                    {/* <p>Session part: {sessionPart.toString()}</p>
-                                    <p>Remaining time: {remainingTime}</p> */}
-                                    {sessionComponent}
-                                </div>
-                            )
-                        }
+                        <div className="container-fluid">
+                            <div className="collapse" id="collapseExample">
+                                <h1>Welcome back, {selectStudentName}!</h1>
+                                <p>Your next session is #{nextSessionSeqNumber}</p>
+                            </div>
+                            <p>
+                                <button onClick={() => setHeaderIsHidden(!headerIsHidden)} className="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="true" aria-controls="collapseExample">
+                                    {headerIsHidden ? "Show Header" : "Hide Header"}
+                                </button>
+                            </p>
+                            <div className="">
+                                {!sessionStarted && (
+                                    <button
+                                        className="btn btn-primary"
+                                        onClick={handleStartSession}
+                                    >
+                                        Start Session
+                                    </button>
+                                )}
+                            </div>
+                            {sessionComponent}
+                        </div>
                     </div>
                 )
             }
