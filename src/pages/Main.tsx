@@ -45,6 +45,18 @@ function Main() {
         }
     }, [selectStudentName]);
 
+    const handleStartSession = useCallback(async () => {
+        const response = await studentService.startNextSession(selectStudentName);
+        if (response.status === 'err') {
+            alert(response.message);
+        } else {
+            await sessionService.listenToTimerUpdates(setRemainingTime);
+            await sessionService.listenToSessionPartUpdates(setSessionPart);
+            setSessionStarted(true);
+            setSession(await sessionService.getSession(nextSessionSeqNumber));
+        }
+    }, [selectStudentName, nextSessionSeqNumber]);
+
     let sessionComponent;
     if (sessionPart == SessionPart.FINISHED) {
         setSessionStarted(false);
@@ -67,18 +79,6 @@ function Main() {
             break;
         }
     }
-
-    const handleStartSession = useCallback(async () => {
-        const response = await studentService.startNextSession(selectStudentName);
-        if (response.status === 'err') {
-            alert(response.message);
-        } else {
-            await sessionService.listenToTimerUpdates(setRemainingTime);
-            await sessionService.listenToSessionPartUpdates(setSessionPart);
-            setSessionStarted(true);
-            setSession(await sessionService.getSession(nextSessionSeqNumber));
-        }
-    }, [selectStudentName, nextSessionSeqNumber]);
 
     return (
         <>
