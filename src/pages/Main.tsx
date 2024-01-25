@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import SessionService, { Session, SessionPart } from "../services/session";
 import ReadComp from "../components/ReadComp";
 import Homework from "../components/Homework";
@@ -45,6 +45,40 @@ function Main() {
         }
     }, [selectStudentName]);
 
+    let sessionComponent;
+    if (sessionPart == SessionPart.FINISHED) {
+        setSessionStarted(false);
+    }
+    switch (sessionPart) {
+        case SessionPart.READ_COMP: {
+            if (session) {
+                sessionComponent = (<ReadComp link={session.read_comp_link} />);
+            }
+            break;
+        }
+        case SessionPart.HOMEWORK: {
+            sessionComponent = (<Homework />);
+            break;
+        }
+        case SessionPart.SURVEY: {
+            if (session) {
+                sessionComponent = (<Survey link={session.survey_link} />);
+            }
+            break;
+        }
+    }
+
+    const handleStartSession = useCallback(async () => {
+        const response = await studentService.startNextSession(selectStudentName);
+        if (response.status === 'err') {
+            alert(response.message);
+        } else {
+            await sessionService.listenToTimerUpdates(setRemainingTime);
+            await sessionService.listenToSessionPartUpdates(setSessionPart);
+            setSessionStarted(true);
+            setSession(await sessionService.getSession(nextSessionSeqNumber));
+        }
+    }, [selectStudentName, nextSessionSeqNumber]);
 
     return (
         <>
@@ -79,17 +113,7 @@ function Main() {
                                         {!sessionStarted && (
                                             <button
                                                 className="btn btn-primary"
-                                                onClick={async () => {
-                                                    const response = await studentService.startNextSession(selectStudentName);
-                                                    if (response.status === 'err') {
-                                                        alert(response.message);
-                                                    } else {
-                                                        await sessionService.listenToTimerUpdates(setRemainingTime);
-                                                        await sessionService.listenToSessionPartUpdates(setSessionPart);
-                                                        setSessionStarted(true);
-                                                        setSession(await sessionService.getSession(nextSessionSeqNumber));
-                                                    }
-                                                }}
+                                                onClick={handleStartSession}
                                             >
                                                 Start Session
                                             </button>
@@ -97,20 +121,7 @@ function Main() {
                                     </div>
                                     {/* <p>Session part: {sessionPart.toString()}</p>
                                     <p>Remaining time: {remainingTime}</p> */}
-                                    {
-                                        (sessionPart === SessionPart.READ_COMP && session) && (<ReadComp link={session.read_comp_link} />)
-                                    }
-                                    {
-                                        sessionPart === SessionPart.HOMEWORK && (<Homework />)
-                                    }
-                                    {
-                                        (sessionPart === SessionPart.SURVEY && session) && (<Survey link={session.survey_link} />)
-                                    }
-                                    {
-                                        sessionPart === SessionPart.FINISHED && (
-                                            <>{setSessionStarted(false)}</>
-                                        )
-                                    }
+                                    {sessionComponent}
                                 </div>
                             )
                         }
