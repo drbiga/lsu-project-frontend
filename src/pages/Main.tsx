@@ -107,6 +107,8 @@ function Main() {
                             <div className="collapse" id="collapseExample">
                                 <h1>Welcome back, {selectStudentName}!</h1>
                                 <p>Your next session is #{nextSessionSeqNumber}</p>
+                                <p>Session Part: {sessionPart.toString()} </p>
+                                <p>Remaining Time: {remainingTime}</p>
                             </div>
                             <p>
                                 <button onClick={() => setHeaderIsHidden(!headerIsHidden)} className="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="true" aria-controls="collapseExample">
