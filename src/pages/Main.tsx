@@ -5,6 +5,7 @@ import Homework from "../components/Homework";
 import Survey from "../components/Survey";
 import StudentService from "../services/student";
 import Header from "../components/Header";
+import UserSelection from "./UserSelection";
 const sessionService = new SessionService();
 const studentService = new StudentService();
 
@@ -17,6 +18,8 @@ function Main() {
     const [remainingTime, setRemainingTime] = useState(0);
     const [studentNames, setStudentNames] = useState<string[]>([]);
     const [selectStudentName, setSelectedStudentName] = useState<string>('');
+
+    const [headerIsHidden, setHeaderIsHidden] = useState<boolean>(true);
 
     useEffect(() => {
         async function getStudentNames() {
@@ -47,47 +50,10 @@ function Main() {
         <>
         <Header />
             {
-                selectStudentName === '' ? (
-                    <div
-                        style={{ height: '100vh', width: '100vw', overflow: 'hidden' }}
-                        className="container d-flex flex-column align-items-center justify-content-center"
-                    >
-                        {/* Black overlay */}
-                        <div style={{ backgroundColor: '#000a', zIndex: 1, position: "absolute", top: 0, left: 0, right: 0, bottom: 0}}></div>
-                        <video
-                            autoPlay
-                            loop
-                            muted
-                            style={{overflow: 'hidden', maxWidth: '100%', position: 'absolute', zIndex: 0}}
-                        >
-                            <source
-                                src="video.mp4"
-                                type="video/mp4"
-                                style={{overflow: 'hidden'}}
-                            ></source>
-                        </video>
-                        <div
-                            style={{zIndex: 2, color: '#fff'}}
-                        >
-                            <h1>Welcome...</h1>
-                            <div>
-                                <p style={{color: '#ddda'}}>To the best time of your life</p>
-                                <h2 style={{ fontSize: '1.2em'}}>Who are you?</h2>
-                                <ul style={{listStyle: "none"}}>
-                                    {studentNames.map((name) => (
-                                        <li className="mb-1" key={name}>
-                                            <button className="btn btn-primary container" onClick={() => {
-                                                setSelectedStudentName(name);
-                                            }}>{name}</button>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                ) : (
+                selectStudentName === '' ? <UserSelection studentNames={studentNames} setSelectedStudentName={setSelectedStudentName} /> : (
                     <div>
                         {
+                            // If the session is finished
                             sessionPart === SessionPart.FINISHED ? (
                                 <div
                                     style={{ minHeight: '100vh' }}
@@ -98,9 +64,17 @@ function Main() {
                                     <p>Way to goo!</p>
                                 </div>
                             ) : (
+                            // Else
                                 <div className="container">
-                                    <h1>Welcome back, {selectStudentName}!</h1>
-                                    <p>Your next session is #{nextSessionSeqNumber}</p>
+                                    <div className="collapse" id="collapseExample">
+                                        <h1>Welcome back, {selectStudentName}!</h1>
+                                        <p>Your next session is #{nextSessionSeqNumber}</p>
+                                    </div>
+                                    <p>
+                                        <button onClick={() => setHeaderIsHidden(!headerIsHidden)} className="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="true" aria-controls="collapseExample">
+                                            {headerIsHidden ? "Show Header" : "Hide Header"}
+                                        </button>
+                                    </p>
                                     <div>
                                         {!sessionStarted && (
                                             <button
@@ -121,8 +95,8 @@ function Main() {
                                             </button>
                                         )}
                                     </div>
-                                    <p>Session part: {sessionPart.toString()}</p>
-                                    <p>Remaining time: {remainingTime}</p>
+                                    {/* <p>Session part: {sessionPart.toString()}</p>
+                                    <p>Remaining time: {remainingTime}</p> */}
                                     {
                                         (sessionPart === SessionPart.READ_COMP && session) && (<ReadComp link={session.read_comp_link} />)
                                     }
