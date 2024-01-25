@@ -80,8 +80,6 @@ function Main() {
             break;
         }
         case SessionPart.FINISHED: {
-            // setSessionStarted(false);
-            console.log("Aqui");
             sessionComponent = (
                 <div
                     style={{ minHeight: '100vh' }}
