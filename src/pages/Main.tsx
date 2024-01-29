@@ -40,8 +40,6 @@ function Main() {
     const [studentNames, setStudentNames] = useState<string[]>([]);
     const [selectStudentName, setSelectedStudentName] = useState<string>('');
 
-    const [headerIsHidden, setHeaderIsHidden] = useState<boolean>(true);
-
     useEffect(() => {
         async function getStudentNames() {
             const names = await studentService.getAllStudentNames();
