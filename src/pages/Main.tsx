@@ -6,8 +6,29 @@ import Survey from "../components/Survey";
 import StudentService from "../services/student";
 import Header from "../components/Header";
 import UserSelection from "./UserSelection";
+
+import styled from "styled-components";
+
+import { BiChevronRight } from "react-icons/bi";
+
 const sessionService = new SessionService();
 const studentService = new StudentService();
+
+function presentText(sessionPart: string): string {
+    const whitespace = sessionPart.replace('_', ' ').toLowerCase();
+    const upper = whitespace.charAt(0).toUpperCase() + whitespace.slice(1);
+    return upper;
+}
+
+function presentTime(time: number): string {
+    return `Minutes: ${(time / 60).toFixed(0)} Seconds: ${time % 60}`;
+}
+
+
+const HeadingInfo = styled.span`
+    color: #502E81;
+    font-weight: bold;
+`;
 
 
 function Main() {
@@ -57,6 +78,10 @@ function Main() {
         }
     }, [selectStudentName, nextSessionSeqNumber]);
 
+    // const headingStyle = {
+    //     textDecoration: ""
+    // };
+
     let sessionComponent;
     switch (sessionPart) {
         case SessionPart.WAITING_START: {
@@ -101,32 +126,39 @@ function Main() {
         <>
         <Header />
             {
-                selectStudentName === '' ? <UserSelection studentNames={studentNames} setSelectedStudentName={setSelectedStudentName} /> : (
+                selectStudentName === '' ? (
+                    <UserSelection studentNames={studentNames} setSelectedStudentName={setSelectedStudentName} />
+                ) : (
                     <div>
-                        <div className="container-fluid">
-                            <div className="collapse" id="collapseExample">
-                                <h1>Welcome back, {selectStudentName}!</h1>
-                                <p>Your next session is #{nextSessionSeqNumber}</p>
-                                <p>Session Part: {sessionPart.toString()} </p>
-                                <p>Remaining Time: {remainingTime}</p>
+                        <div className="container-fluid d-flex flex-row justify-content-center align-items-center px-5 gap-5">
+                            <div className="d-flex flex-row align-items-start">
+                                <BiChevronRight color="#502E81" size={30} />
+                                <p><HeadingInfo>Welcome back:</HeadingInfo> {presentText(selectStudentName)}!</p>
                             </div>
-                            <p>
-                                <button onClick={() => setHeaderIsHidden(!headerIsHidden)} className="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="true" aria-controls="collapseExample">
-                                    {headerIsHidden ? "Show Header" : "Hide Header"}
-                                </button>
-                            </p>
-                            <div className="">
-                                {!sessionStarted && (
+                            <div className="d-flex flex-row align-items-start">
+                                <BiChevronRight color="#502E81" size={30} />
+                                <p><HeadingInfo>Next session:</HeadingInfo> session #{nextSessionSeqNumber}</p>
+                            </div>
+                            <div className="d-flex flex-row align-items-start">
+                                <BiChevronRight color="#502E81" size={30} />
+                                <p><HeadingInfo>Session Part:</HeadingInfo> {presentText(sessionPart)} </p>
+                            </div>
+                            <div className="d-flex flex-row align-items-start">
+                                <BiChevronRight color="#502E81" size={30} />
+                                <p><HeadingInfo>Remaining Time:</HeadingInfo> {presentTime(remainingTime)}</p>
+                            </div>
+                            {!sessionStarted && (
+                                <p>
                                     <button
                                         className="btn btn-primary"
                                         onClick={handleStartSession}
                                     >
                                         Start Session
                                     </button>
-                                )}
-                            </div>
-                            {sessionComponent}
+                                </p>
+                            )}
                         </div>
+                        {sessionComponent}
                     </div>
                 )
             }
