@@ -1,5 +1,5 @@
-export default function createWebSocket(section: string): WebSocket {
-    const socket = new WebSocket(`ws://localhost:8000/sessions/${section}/ws`); // Replace with your actual WebSocket URL
+export default function createWebSocket(): WebSocket {
+    const socket = new WebSocket(`ws://localhost:8000/sessions/ws`); // Replace with your actual WebSocket URL
     
     socket.onopen = () => {
       console.log('WebSocket connection established.');

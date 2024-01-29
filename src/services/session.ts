@@ -16,6 +16,10 @@ export interface Session {
 	survey_link: string;
 }
 
+export interface SessionData {
+    session_part: string;
+    remaining_time: number;
+}
 
 export default class SessionService {
     private socket: WebSocket | null;
@@ -60,19 +64,11 @@ export default class SessionService {
     //     }
     // }
 
-    public async listenToTimerUpdates(setTimerValue: React.Dispatch<React.SetStateAction<number>>) {
-        this.socket = createWebSocket('timer');
+    public async listen(setSessionData: React.Dispatch<React.SetStateAction<SessionData>>) {
+        this.socket = createWebSocket();
         this.socket.addEventListener('message', (event) => {
             const data = JSON.parse(event.data);
-            setTimerValue(data.minutes*60 + data.seconds);
-        });   
-    }
-
-    public async listenToSessionPartUpdates(setPartValue: React.Dispatch<React.SetStateAction<SessionPart>>) {
-        this.socket = createWebSocket('session_part');
-        this.socket.addEventListener('message', (event) => {
-            const data = JSON.parse(event.data);
-            setPartValue(data.session_part);
-        });   
+            setSessionData(data);
+        });
     }
 }
