@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import SessionService, { Session, SessionPart } from "../services/session";
+import SessionService, { Session, SessionData, SessionPart } from "../services/session";
 import ReadComp from "../components/ReadComp";
 import Homework from "../components/Homework";
 import Survey from "../components/Survey";
@@ -33,12 +33,11 @@ const HeadingInfo = styled.span`
 
 function Main() {
     const [sessionStarted, setSessionStarted] = useState(false);
-    const [sessionPart, setSessionPart] = useState(SessionPart.WAITING_START);
     const [nextSessionSeqNumber, setNextSessionSeqNumber] = useState(0);
     const [session, setSession] = useState<Session | null>(null);
-    const [remainingTime, setRemainingTime] = useState(0);
     const [studentNames, setStudentNames] = useState<string[]>([]);
     const [selectStudentName, setSelectedStudentName] = useState<string>('');
+    const [sessionData, setSessionData] = useState<SessionData>({remaining_time: 0, session_part: "WAITING_START"});
 
     useEffect(() => {
         async function getStudentNames() {
@@ -69,19 +68,15 @@ function Main() {
         if (response.status === 'err') {
             alert(response.message);
         } else {
-            await sessionService.listenToTimerUpdates(setRemainingTime);
-            await sessionService.listenToSessionPartUpdates(setSessionPart);
+            await sessionService.listen(setSessionData);
             setSessionStarted(true);
             setSession(await sessionService.getSession(nextSessionSeqNumber));
         }
     }, [selectStudentName, nextSessionSeqNumber]);
 
-    // const headingStyle = {
-    //     textDecoration: ""
-    // };
 
     let sessionComponent;
-    switch (sessionPart) {
+    switch (sessionData.session_part) {
         case SessionPart.WAITING_START: {
             sessionComponent = (<></>);
             break;
@@ -139,11 +134,11 @@ function Main() {
                             </div>
                             <div className="d-flex flex-row align-items-start">
                                 <BiChevronRight color="#502E81" size={30} />
-                                <p><HeadingInfo>Session Part:</HeadingInfo> {presentText(sessionPart)} </p>
+                                <p><HeadingInfo>Session Part:</HeadingInfo> {presentText(sessionData.session_part)} </p>
                             </div>
                             <div className="d-flex flex-row align-items-start">
                                 <BiChevronRight color="#502E81" size={30} />
-                                <p><HeadingInfo>Remaining Time:</HeadingInfo> {presentTime(remainingTime)}</p>
+                                <p><HeadingInfo>Remaining Time:</HeadingInfo> {presentTime(sessionData.remaining_time)}</p>
                             </div>
                             {!sessionStarted && (
                                 <p>
