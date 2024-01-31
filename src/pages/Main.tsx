@@ -21,7 +21,7 @@ function presentText(sessionPart: string): string {
 }
 
 function presentTime(time: number): string {
-    return `Minutes: ${(time / 60).toFixed(0)} Seconds: ${time % 60}`;
+    return `Minutes: ${(Math.max(time / 60 - 1, 0)).toFixed(0)} Seconds: ${time % 60}`;
 }
 
 
