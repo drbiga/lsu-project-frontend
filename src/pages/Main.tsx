@@ -10,6 +10,7 @@ import UserSelection from "./UserSelection";
 import styled from "styled-components";
 
 import { BiChevronRight } from "react-icons/bi";
+import { Form, Formik, Field } from "formik";
 
 const sessionService = new SessionService();
 const studentService = new StudentService();
@@ -38,6 +39,8 @@ function Main() {
     const [studentNames, setStudentNames] = useState<string[]>([]);
     const [selectStudentName, setSelectedStudentName] = useState<string>('');
     const [sessionData, setSessionData] = useState<SessionData>({remaining_time: 0, session_part: "WAITING_START"});
+    const [hideSurveyQueueLinkForm, setHideSurveyQueueLinkForm] = useState(false);
+    const [surveyQueueLink, setSurveyQueueLink] = useState<string>('');
 
     useEffect(() => {
         async function getStudentNames() {
@@ -63,6 +66,19 @@ function Main() {
         }
     }, [selectStudentName]);
 
+    useEffect(() => {
+        // If the user has already done his/her first session, then we already
+        // have the survey queue link.
+        if (selectStudentName !== '' && nextSessionSeqNumber > 1) {
+            async function execute() {
+                const student = await studentService.getStudent(selectStudentName);
+                setSurveyQueueLink(student.survey_queue_link);
+            }
+
+            execute();
+        }
+    }, [selectStudentName, nextSessionSeqNumber]);
+
     const handleStartSession = useCallback(async () => {
         const response = await studentService.startNextSession(selectStudentName);
         if (response.status === 'err') {
@@ -74,7 +90,6 @@ function Main() {
         }
     }, [selectStudentName, nextSessionSeqNumber]);
 
-
     let sessionComponent;
     switch (sessionData.session_part) {
         case SessionPart.WAITING_START: {
@@ -83,7 +98,7 @@ function Main() {
         }
         case SessionPart.READ_COMP: {
             if (session) {
-                sessionComponent = (<ReadComp link={session.read_comp_link} />);
+                sessionComponent = (<ReadComp link={nextSessionSeqNumber === 1 ? session.read_comp_link : surveyQueueLink} />);
             }
             break;
         }
@@ -93,7 +108,7 @@ function Main() {
         }
         case SessionPart.SURVEY: {
             if (session) {
-                sessionComponent = (<Survey link={session.survey_link} />);
+                sessionComponent = (<Survey link={surveyQueueLink} />);
             }
             break;
         }
@@ -149,6 +164,32 @@ function Main() {
                                         Start Session
                                     </button>
                                 </p>
+                            )}
+                            {(nextSessionSeqNumber === 1 && sessionStarted && !hideSurveyQueueLinkForm) && (
+                                <Formik
+                                    initialValues={{
+                                        surveyQueueLink: ''
+                                    }}
+                                    onSubmit={(values, actions) => {
+                                        async function submit() {
+                                            const response = await studentService.setStudentSurveyQueueLink(selectStudentName, values.surveyQueueLink);
+                                            if (response.status === 'success') {
+                                                setHideSurveyQueueLinkForm(true);
+                                                setSurveyQueueLink(values.surveyQueueLink);
+                                            } else {
+                                                alert('Something went wrong. Please contact mcost16@lsu.edu immediatelly');
+                                            }
+                                            actions.setSubmitting(false);
+                                        }
+
+                                        submit();
+                                    }}
+                                >
+                                    <Form>
+                                        <Field id="surveyQueueLink" name="surveyQueueLink" placeholder="Survey Queue Link here..." />
+                                        <button type="submit">Submit</button>
+                                    </Form>
+                                </Formik>
                             )}
                         </div>
                         {sessionComponent}
