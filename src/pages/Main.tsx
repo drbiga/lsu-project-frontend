@@ -12,6 +12,9 @@ import styled from "styled-components";
 import { BiChevronRight } from "react-icons/bi";
 import { Form, Formik, Field } from "formik";
 
+import { ToastContainer, toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
+
 const sessionService = new SessionService();
 const studentService = new StudentService();
 
@@ -41,6 +44,8 @@ function Main() {
     const [sessionData, setSessionData] = useState<SessionData>({remaining_time: 0, session_part: "WAITING_START"});
     const [hideSurveyQueueLinkForm, setHideSurveyQueueLinkForm] = useState(false);
     const [surveyQueueLink, setSurveyQueueLink] = useState<string>('');
+
+    const [pressSubmitReadCompTriggered, setPressSubmitReadCompTriggered] = useState(false);
 
     useEffect(() => {
         async function getStudentNames() {
@@ -79,6 +84,16 @@ function Main() {
         }
     }, [selectStudentName, nextSessionSeqNumber]);
 
+    // Reminding the user to press the Submit button when the Read Comp part of the
+    // session is ending.
+    useEffect(() => {
+        console.log(sessionData);
+        if (sessionData.remaining_time < 60 && sessionData.session_part === SessionPart.READ_COMP && !pressSubmitReadCompTriggered) {
+            toast('Please press the submit button');
+            setPressSubmitReadCompTriggered(true);
+        }
+    }, [sessionData]);
+
     const handleStartSession = useCallback(async () => {
         const response = await studentService.startNextSession(selectStudentName);
         if (response.status === 'err') {
@@ -98,7 +113,11 @@ function Main() {
         }
         case SessionPart.READ_COMP: {
             if (session) {
-                sessionComponent = (<ReadComp link={nextSessionSeqNumber === 1 ? session.read_comp_link : surveyQueueLink} />);
+                sessionComponent = (
+                    <>
+                        <ReadComp link={nextSessionSeqNumber === 1 ? session.read_comp_link : surveyQueueLink} />
+                    </>
+                );
             }
             break;
         }
@@ -193,6 +212,18 @@ function Main() {
                             )}
                         </div>
                         {sessionComponent}
+                        <ToastContainer
+                            position="top-right"
+                            autoClose={5000}
+                            hideProgressBar={false}
+                            newestOnTop={false}
+                            closeOnClick
+                            rtl={false}
+                            pauseOnFocusLoss
+                            draggable
+                            pauseOnHover
+                            theme="light"
+                        />
                     </div>
                 )
             }
