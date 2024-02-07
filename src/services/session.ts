@@ -46,23 +46,6 @@ export default class SessionService {
         return response.data;
     }
 
-    // public async getRemainingTime() {
-    //     const response = await axios.get(`http://localhost:8000/sessions/remaining_time`);
-    //     if (response.data.status === 'success') {
-    //         return response.data.data
-    //     } else {
-    //         return -1
-    //     }
-    // }
-
-    // public async getCurrentPart() {
-    //     const response = await axios.get(`http://localhost:8000/sessions/part`);
-    //     if (response.data.status === 'success') {
-    //         return response.data.data
-    //     } else {
-    //         return 'UNKNOWN'
-    //     }
-    // }
 
     public async listen(setSessionData: React.Dispatch<React.SetStateAction<SessionData>>) {
         this.socket = createWebSocket();
