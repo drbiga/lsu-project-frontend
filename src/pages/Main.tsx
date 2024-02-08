@@ -156,7 +156,7 @@ function Main() {
                 selectStudentName === '' ? (
                     <UserSelection studentNames={studentNames} setSelectedStudentName={setSelectedStudentName} />
                 ) : (
-                    <div>
+                    <div style={{ height: '5vh' }}>
                         <div className="container-fluid d-flex flex-row justify-content-center align-items-center px-5 gap-5">
                             <div className="d-flex flex-row align-items-start">
                                 <BiChevronRight color="#502E81" size={30} />
