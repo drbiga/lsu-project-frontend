@@ -6,6 +6,8 @@ interface UserSelectionProps {
 export default function UserSelection(props: UserSelectionProps) {
     const { studentNames, setSelectedStudentName } = props;
 
+    const style = {backgroundColor: '#0000'};
+
     return (
         <div
             style={{ height: '100vh', width: '100vw', overflow: 'hidden' }}
@@ -26,15 +28,15 @@ export default function UserSelection(props: UserSelectionProps) {
                 ></source>
             </video>
             <div
-                style={{zIndex: 2, color: '#fff'}}
+                style={{zIndex: 2, color: '#fff', ...style}}
             >
-                <h1>Welcome...</h1>
-                <div>
-                    <p style={{color: '#ddda'}}>To the best time of your life</p>
-                    <h2 style={{ fontSize: '1.2em'}}>Who are you?</h2>
-                    <ul style={{listStyle: "none"}}>
+                <h1 style={style}>Welcome...</h1>
+                <div style={style}>
+                    <p style={{color: '#ddda', ...style}}>To the best time of your life</p>
+                    <h2 style={{ fontSize: '1.2em', ...style}}>Who are you?</h2>
+                    <ul style={{listStyle: "none", ...style}}>
                         {studentNames.map((name) => (
-                            <li className="mb-1" key={name}>
+                            <li className="mb-1" key={name} style={style}>
                                 <button className="btn btn-primary container" onClick={() => {
                                     setSelectedStudentName(name);
                                 }}>{name}</button>
