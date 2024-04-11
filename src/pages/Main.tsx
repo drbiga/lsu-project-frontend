@@ -45,7 +45,7 @@ function Main() {
     const [hideSurveyQueueLinkForm, setHideSurveyQueueLinkForm] = useState(false);
     const [surveyQueueLink, setSurveyQueueLink] = useState<string>('');
 
-    const [pressSubmitReadCompTriggered, setPressSubmitReadCompTriggered] = useState(false);
+    const [resumeSessionButtonVisible, setResumeSessionButtonVisible] = useState(false);
 
     useEffect(() => {
         async function getStudentNames() {
@@ -88,9 +88,9 @@ function Main() {
     // session is ending.
     useEffect(() => {
         console.log(sessionData);
-        if (sessionData.remaining_time < 60 && sessionData.session_part === SessionPart.READ_COMP && !pressSubmitReadCompTriggered) {
-            toast('Please press the submit button');
-            setPressSubmitReadCompTriggered(true);
+        if (sessionData.session_part === SessionPart.READ_COMP && sessionData.remaining_time <= 1) {
+            setResumeSessionButtonVisible(true);
+            alert('Your time for the reading comprehension has finished. Please submit the survey by pressing the Submit button at the bottom and then press the Proceed to homework button.')
         }
     }, [sessionData]);
 
@@ -104,6 +104,18 @@ function Main() {
             setSession(await sessionService.getSession(nextSessionSeqNumber));
         }
     }, [selectStudentName, nextSessionSeqNumber]);
+
+    const handleResumeSession = useCallback(async () => {
+        async function handle() {
+            const response = await sessionService.resumeSession();
+            if (response.status === 'err') {
+                alert(response.message);
+            } else {
+                setResumeSessionButtonVisible(false);
+            }
+        }
+        handle();
+    }, [selectStudentName]);
 
     let sessionComponent;
     switch (sessionData.session_part) {
@@ -184,6 +196,16 @@ function Main() {
                                     </button>
                                 </p>
                             )}
+                            {sessionStarted && resumeSessionButtonVisible && sessionData.session_part === SessionPart.READ_COMP && (
+                                <p>
+                                    <button
+                                        className="btn btn-success"
+                                        onClick={handleResumeSession}
+                                    >
+                                        Proceed to Homework
+                                    </button>
+                                </p>
+                            )}
                             {(nextSessionSeqNumber === 1 && sessionStarted && !hideSurveyQueueLinkForm) && (
                                 <Formik
                                     initialValues={{
@@ -212,7 +234,7 @@ function Main() {
                             )}
                         </div>
                         {sessionComponent}
-                        <ToastContainer
+                        {/* <ToastContainer
                             position="top-right"
                             autoClose={5000}
                             hideProgressBar={false}
@@ -223,7 +245,7 @@ function Main() {
                             draggable
                             pauseOnHover
                             theme="light"
-                        />
+                        /> */}
                     </div>
                 )
             }

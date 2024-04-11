@@ -54,4 +54,9 @@ export default class SessionService {
             setSessionData(data);
         });
     }
+
+    public async resumeSession(): Promise<{status: string, message: string}> {
+        const response = await axios.post(`http://localhost:8000/sessions/executing/resume`);
+        return response.data
+    }
 }
