@@ -196,7 +196,7 @@ function Main() {
                                     </button>
                                 </p>
                             )}
-                            {sessionStarted && resumeSessionButtonVisible && sessionData.session_part === SessionPart.READ_COMP && (
+                            {sessionStarted && sessionData.session_part === SessionPart.READ_COMP && (
                                 <p>
                                     <button
                                         className="btn btn-success"
