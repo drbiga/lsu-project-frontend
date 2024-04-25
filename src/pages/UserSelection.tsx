@@ -30,7 +30,7 @@ export default function UserSelection(props: UserSelectionProps) {
             <div
                 style={{zIndex: 2, color: '#fff', ...style}}
             >
-                <h1 style={style}>Welcome...</h1>
+                <h1 style={style}>Welcome back!</h1>
                 <div style={style}>
                     <p style={{color: '#ddda', ...style}}>To the best time of your life</p>
                     <h2 style={{ fontSize: '1.2em', ...style}}>Who are you?</h2>
